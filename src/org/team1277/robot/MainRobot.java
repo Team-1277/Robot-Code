@@ -23,7 +23,7 @@ public class MainRobot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-
+        System.out.println("Hello World!");
     }
 
     /**
