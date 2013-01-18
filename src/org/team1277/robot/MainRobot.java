@@ -11,6 +11,7 @@ package org.team1277.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.Watchdog;
 
 /**
@@ -42,14 +43,17 @@ public class MainRobot extends IterativeRobot {
     public static int m_telePeriodicLoops;
     
     
-    //Jaguar Variables
-    public static Jaguar m_rightDrive;
-    public static Jaguar m_leftDrive;
+    //Motor Variables
+    public static Victor m_rightDrive;
+    public static Victor m_leftDrive;
+    
+    public static Jaguar testJag;
     
     //Variables
     public static int driveMode; //1=Tankdrive 2=ArcadeDrive
     public static double driveSpeed; //speed modifier for the drive 0.0-1.0
     
+    //public static final String eatItNick = "CAMEL CASE FTW";
     
     /********************************** Constructor **************************************************/
     
@@ -60,8 +64,9 @@ public class MainRobot extends IterativeRobot {
         m_telePeriodicLoops = 0;
         
         //Initalize jaguars
-        m_rightDrive = new Jaguar(PWM_rightDrivePort);
-        m_leftDrive = new Jaguar(PWM_leftDrivePort);
+        testJag = new Jaguar(PWM_rightDrivePort);
+        //m_rightDrive = new Victor(PWM_rightDrivePort);
+        m_leftDrive = new Victor(PWM_leftDrivePort);
         
         //Init joysticks (You can change the ports in the driver station gui)
         m_rightStick = new Joystick(1); //port 1
@@ -99,6 +104,10 @@ public class MainRobot extends IterativeRobot {
     public void disabledInit() {
         System.out.println("Tele-op deactivated");
         m_disabledPeriodicLoops = 0;
+        
+        //stop motors
+        //m_rightDrive.set(0);
+        m_leftDrive.set(0);
     }
     
     /**
@@ -115,6 +124,10 @@ public class MainRobot extends IterativeRobot {
     public void teleopInit() {
         System.out.println("Tele-op activated...");
         m_telePeriodicLoops = 0;
+        
+        //reset motors
+        //m_rightDrive.set(0);
+        m_leftDrive.set(0);
     }
     
     /********************************** Periodic Routines *************************************/
@@ -137,6 +150,7 @@ public class MainRobot extends IterativeRobot {
         Watchdog.getInstance().feed();
         // add to the loop count
         m_autoPeriodicLoops++;
+        
     }
 
     /**
@@ -147,5 +161,10 @@ public class MainRobot extends IterativeRobot {
         Watchdog.getInstance().feed();
         // add to the loop count
         m_telePeriodicLoops++;
+        //Main drive train
+        //testJag.set(-.1);
+        //m_leftDrive.set(.1);
+        //System.out.println(testJag.get());
+        DriveTrain.updateDrive(driveMode);
     }
 }
