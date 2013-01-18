@@ -11,6 +11,7 @@ package org.team1277.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.Watchdog;
 
@@ -29,6 +30,7 @@ public class MainRobot extends IterativeRobot {
     //PWM Constants
     static final int PWM_rightDrivePort = 1;
     static final int PWM_leftDrivePort = 2;
+    static final int PWM_cameraServo = 3;
     
     //Joystick Variables
     public static Joystick m_rightStick;			// joystick 1 (arcade stick or right tank stick)
@@ -53,6 +55,9 @@ public class MainRobot extends IterativeRobot {
     public static int driveMode; //1=Tankdrive 2=ArcadeDrive
     public static double driveSpeed; //speed modifier for the drive 0.0-1.0
     
+    //Camera Junk
+    public static Servo cameraServo;
+    
     //public static final String eatItNick = "CAMEL CASE FTW";
     
     /********************************** Constructor **************************************************/
@@ -67,6 +72,8 @@ public class MainRobot extends IterativeRobot {
         testJag = new Jaguar(PWM_rightDrivePort);
         //m_rightDrive = new Victor(PWM_rightDrivePort);
         m_leftDrive = new Victor(PWM_leftDrivePort);
+        
+        cameraServo = new Servo(PWM_cameraServo);
         
         //Init joysticks (You can change the ports in the driver station gui)
         m_rightStick = new Joystick(1); //port 1
@@ -93,7 +100,7 @@ public class MainRobot extends IterativeRobot {
         System.out.println("Initializing robot....");
         
         driveMode = 1; //Tank Drive
-        driveSpeed = .5;
+        driveSpeed = .25;
         
         System.out.println("Initialization done....");
     }
@@ -166,5 +173,6 @@ public class MainRobot extends IterativeRobot {
         //m_leftDrive.set(.1);
         //System.out.println(testJag.get());
         DriveTrain.updateDrive(driveMode);
+        CameraMotor.updateAngle();
     }
 }

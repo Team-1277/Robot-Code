@@ -13,7 +13,6 @@ public class DriveTrain {
      * This function updates the jaguars based on the position of the joysticks
      */
     public static void updateDrive(int state) {
-        //System.out.println(state);
         if (state == 1) {
             updateTank();
         }
