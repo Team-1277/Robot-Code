@@ -26,10 +26,10 @@ public class DriveTrain {
      * Updates for the tank drive
      */
     public static void updateTank() {
-        double rightJoyY = MainRobot.m_rightStick.getY();
-        double leftJoyY = MainRobot.m_leftStick.getY();
+        double rightJoyY = MainRobot.rightStick.getY();
+        double leftJoyY = MainRobot.leftStick.getY();
         MainRobot.testJag.set(rightJoyY*MainRobot.driveSpeed);//m_rightDrive.set(rightJoyY*MainRobot.driveSpeed);
-        MainRobot.m_leftDrive.set(leftJoyY*MainRobot.driveSpeed);
+        MainRobot.leftDrive.set(leftJoyY*MainRobot.driveSpeed);
     }
     
     /**
@@ -38,23 +38,26 @@ public class DriveTrain {
     public static void updateArcade() {
         double joyY, joyX;
         if (MainRobot.ARCADE_JOYSTICK == 1) {
-            joyY = MainRobot.m_leftStick.getY();
-            joyX = MainRobot.m_leftStick.getX();
+            joyY = MainRobot.leftStick.getY();
+            joyX = MainRobot.leftStick.getX();
         } else if (MainRobot.ARCADE_JOYSTICK == 2) {
-            joyY = MainRobot.m_rightStick.getY();
-            joyX = MainRobot.m_rightStick.getX();
+            joyY = MainRobot.rightStick.getY();
+            joyX = MainRobot.rightStick.getX();
         }
         if (joyX<0) {
-            MainRobot.m_leftDrive.set(joyY*(1+joyX)*MainRobot.driveSpeed);
-            MainRobot.m_rightDrive.set(joyY*MainRobot.driveSpeed);
+            MainRobot.leftDrive.set(joyY*(1+joyX)*MainRobot.driveSpeed);
+            //MainRobot.rightDrive.set(joyY*MainRobot.driveSpeed);
+            MainRobot.testJag.set(joyY*MainRobot.driveSpeed);
         }
         if (joyX>0) {
-            MainRobot.m_rightDrive.set(joyY*(1-joyX)*MainRobot.driveSpeed);
-            MainRobot.m_leftDrive.set(joyY*MainRobot.driveSpeed);
+            //MainRobot.rightDrive.set(joyY*(1-joyX)*MainRobot.driveSpeed);
+            MainRobot.leftDrive.set(joyY*MainRobot.driveSpeed);
+            MainRobot.testJag.set(joyY*MainRobot.driveSpeed);
         }
         if (joyX==0) {
-            MainRobot.m_rightDrive.set(joyY*MainRobot.driveSpeed);
-            MainRobot.m_leftDrive.set(joyY*MainRobot.driveSpeed);
+            //MainRobot.rightDrive.set(joyY*MainRobot.driveSpeed);
+            MainRobot.leftDrive.set(joyY*MainRobot.driveSpeed);
+            MainRobot.testJag.set(joyY*MainRobot.driveSpeed);
         }
     }
     

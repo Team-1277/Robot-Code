@@ -10,22 +10,25 @@ package org.team1277.robot;
  */
 public class CameraMotor {
     
-    public static int angle = 0;
+    public static double angle = 0;
+    public static void setAngle(double inAngle) {
+        angle = inAngle;
+        MainRobot.cameraServo.setAngle(angle);
+    }
     
     public static void updateAngle() {
         if(angle > 0) {
-            if(MainRobot.m_leftStick.getRawButton(3))
+            if(MainRobot.leftStick.getRawButton(MainRobot.BUTTON_CAMERA_SERVO_UP))
             {
                 angle--;
                 MainRobot.cameraServo.setAngle(angle);
             }
         }
         if(angle < 90) {
-            if(MainRobot.m_leftStick.getRawButton(2))
+            if(MainRobot.leftStick.getRawButton(MainRobot.BUTTON_CAMERA_SERVO_DOWN))
             {
                 angle++;
                 MainRobot.cameraServo.setAngle(angle);
-                System.out.println(angle);
             }
         }
         

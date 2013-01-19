@@ -32,22 +32,25 @@ public class MainRobot extends IterativeRobot {
     static final int PWM_leftDrivePort = 2;
     static final int PWM_cameraServo = 3;
     
+    //Joystick Buttons
+    static final int BUTTON_CAMERA_SERVO_UP = 3;
+    static final int BUTTON_CAMERA_SERVO_DOWN = 2;
+    
     //Joystick Variables
-    public static Joystick m_rightStick;			// joystick 1 (arcade stick or right tank stick)
-    public static Joystick m_leftStick;                       // joystick 2 (arcade stick or left tank stick)
+    public static Joystick rightStick;			// joystick 1 (arcade stick or right tank stick)
+    public static Joystick leftStick;                       // joystick 2 (arcade stick or left tank stick)
     static final int NUM_JOYSTICK_BUTTONS = 12;
     boolean[] m_rightStickButtonState = new boolean[(NUM_JOYSTICK_BUTTONS + 1)];
     boolean[] m_leftStickButtonState = new boolean[(NUM_JOYSTICK_BUTTONS + 1)];
     
     // Local variables to count the number of periodic loops performed
-    public static int m_autoPeriodicLoops;
-    public static int m_disabledPeriodicLoops;
-    public static int m_telePeriodicLoops;
-    
-    
+    public static int autoPeriodicLoops;
+    public static int disabledPeriodicLoops;
+    public static int telePeriodicLoops;
+        
     //Motor Variables
-    public static Victor m_rightDrive;
-    public static Victor m_leftDrive;
+    public static Victor rightDrive;
+    public static Victor leftDrive;
     
     public static Jaguar testJag;
     
@@ -64,20 +67,20 @@ public class MainRobot extends IterativeRobot {
     
     public MainRobot() {
         // Initialize counters to record the number of loops completed in autonomous and teleop modes
-        m_autoPeriodicLoops = 0;
-        m_disabledPeriodicLoops = 0;
-        m_telePeriodicLoops = 0;
+        autoPeriodicLoops = 0;
+        disabledPeriodicLoops = 0;
+        telePeriodicLoops = 0;
         
         //Initalize jaguars
         testJag = new Jaguar(PWM_rightDrivePort);
         //m_rightDrive = new Victor(PWM_rightDrivePort);
-        m_leftDrive = new Victor(PWM_leftDrivePort);
+        leftDrive = new Victor(PWM_leftDrivePort);
         
         cameraServo = new Servo(PWM_cameraServo);
         
         //Init joysticks (You can change the ports in the driver station gui)
-        m_rightStick = new Joystick(1); //port 1
-        m_leftStick = new Joystick(2); //port 2
+        rightStick = new Joystick(1); //port 1
+        leftStick = new Joystick(2); //port 2
         
         // Iterate over all the buttons on each joystick, setting state to false for each
         int buttonNum;						// start counting buttons at button 1
@@ -110,11 +113,12 @@ public class MainRobot extends IterativeRobot {
      */
     public void disabledInit() {
         System.out.println("Tele-op deactivated");
-        m_disabledPeriodicLoops = 0;
+        disabledPeriodicLoops = 0;
         
         //stop motors
-        //m_rightDrive.set(0);
-        m_leftDrive.set(0);
+        //rightDrive.set(0);
+        leftDrive.set(0);
+        testJag.set(0);
     }
     
     /**
@@ -122,7 +126,8 @@ public class MainRobot extends IterativeRobot {
      */
     public void autonomousInit() {
         System.out.println("autonomous activated...");
-        m_autoPeriodicLoops = 0;
+        autoPeriodicLoops = 0;
+        CameraMotor.setAngle(90);
     }
     
     /**
@@ -130,11 +135,12 @@ public class MainRobot extends IterativeRobot {
      */
     public void teleopInit() {
         System.out.println("Tele-op activated...");
-        m_telePeriodicLoops = 0;
+        telePeriodicLoops = 0;
         
         //reset motors
-        //m_rightDrive.set(0);
-        m_leftDrive.set(0);
+        //rightDrive.set(0);
+        leftDrive.set(0);
+        CameraMotor.setAngle(90);
     }
     
     /********************************** Periodic Routines *************************************/
@@ -146,7 +152,7 @@ public class MainRobot extends IterativeRobot {
         // feed the user watchdog at every period when disabled
         Watchdog.getInstance().feed();
         // add to the loop count
-        m_disabledPeriodicLoops++;
+        disabledPeriodicLoops++;
     }
     
     /**
@@ -156,7 +162,7 @@ public class MainRobot extends IterativeRobot {
         // feed the user watchdog at every period when autonomous is enabled
         Watchdog.getInstance().feed();
         // add to the loop count
-        m_autoPeriodicLoops++;
+        autoPeriodicLoops++;
         
     }
 
@@ -167,7 +173,7 @@ public class MainRobot extends IterativeRobot {
         // feed the user watchdog at every period when tele-op is enabled
         Watchdog.getInstance().feed();
         // add to the loop count
-        m_telePeriodicLoops++;
+        telePeriodicLoops++;
         //Main drive train
         //testJag.set(-.1);
         //m_leftDrive.set(.1);
