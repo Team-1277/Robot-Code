@@ -11,9 +11,11 @@ package org.team1277.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.Watchdog;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,11 +32,17 @@ public class MainRobot extends IterativeRobot {
     //PWM Constants
     static final int PWM_rightDrivePort = 1;
     static final int PWM_leftDrivePort = 2;
-    static final int PWM_cameraServo = 3;
+    static final int PWM_cameraYServo = 3;
+    static final int PWM_cameraXServo = 4;
     
     //Joystick Buttons
     static final int BUTTON_CAMERA_SERVO_UP = 3;
     static final int BUTTON_CAMERA_SERVO_DOWN = 2;
+    static final int BUTTON_CAMERA_SERVO_LEFT = 4;
+    static final int BUTTON_CAMERA_SERVO_RIGHT = 5;
+    
+    //Relays
+    static final int RELAY_LIGHT = 1;
     
     //Joystick Variables
     public static Joystick rightStick;			// joystick 1 (arcade stick or right tank stick)
@@ -49,17 +57,19 @@ public class MainRobot extends IterativeRobot {
     public static int telePeriodicLoops;
         
     //Motor Variables
-    public static Victor rightDrive;
-    public static Victor leftDrive;
-    
-    public static Jaguar testJag;
+    public static Jaguar rightDrive;
+    public static Jaguar leftDrive;
     
     //Variables
     public static int driveMode; //1=Tankdrive 2=ArcadeDrive
     public static double driveSpeed; //speed modifier for the drive 0.0-1.0
     
     //Camera Junk
-    public static Servo cameraServo;
+    public static Servo cameraServoX;
+    public static Servo cameraServoY;
+    
+    //Flashing Light
+    public static Relay light;
     
     //public static final String eatItNick = "CAMEL CASE FTW";
     
@@ -72,15 +82,19 @@ public class MainRobot extends IterativeRobot {
         telePeriodicLoops = 0;
         
         //Initalize jaguars
-        testJag = new Jaguar(PWM_rightDrivePort);
-        //m_rightDrive = new Victor(PWM_rightDrivePort);
-        leftDrive = new Victor(PWM_leftDrivePort);
+        //testJag = new Jaguar(PWM_rightDrivePort);
+        rightDrive = new Jaguar(PWM_rightDrivePort);
+        leftDrive = new Jaguar(PWM_leftDrivePort);
         
-        cameraServo = new Servo(PWM_cameraServo);
+        cameraServoX = new Servo(PWM_cameraXServo);
+        cameraServoY = new Servo(PWM_cameraYServo);
         
         //Init joysticks (You can change the ports in the driver station gui)
         rightStick = new Joystick(1); //port 1
         leftStick = new Joystick(2); //port 2
+        
+        //Init light
+        light = new Relay(RELAY_LIGHT);
         
         // Iterate over all the buttons on each joystick, setting state to false for each
         int buttonNum;						// start counting buttons at button 1
@@ -103,7 +117,7 @@ public class MainRobot extends IterativeRobot {
         System.out.println("Initializing robot....");
         
         driveMode = 1; //Tank Drive
-        driveSpeed = .25;
+        driveSpeed = .75;
         
         System.out.println("Initialization done....");
     }
@@ -116,9 +130,9 @@ public class MainRobot extends IterativeRobot {
         disabledPeriodicLoops = 0;
         
         //stop motors
-        //rightDrive.set(0);
+        rightDrive.set(0);
         leftDrive.set(0);
-        testJag.set(0);
+        
     }
     
     /**
@@ -127,7 +141,7 @@ public class MainRobot extends IterativeRobot {
     public void autonomousInit() {
         System.out.println("autonomous activated...");
         autoPeriodicLoops = 0;
-        CameraMotor.setAngle(90);
+        CameraMotor.setAngle(45,90);
     }
     
     /**
@@ -138,9 +152,10 @@ public class MainRobot extends IterativeRobot {
         telePeriodicLoops = 0;
         
         //reset motors
-        //rightDrive.set(0);
+        rightDrive.set(0);
         leftDrive.set(0);
-        CameraMotor.setAngle(90);
+        CameraMotor.setAngle(45,90);
+
     }
     
     /********************************** Periodic Routines *************************************/
@@ -180,5 +195,11 @@ public class MainRobot extends IterativeRobot {
         //System.out.println(testJag.get());
         DriveTrain.updateDrive(driveMode);
         CameraMotor.updateAngle();
+        BlinkyLight.update(telePeriodicLoops);
+        
+        if (leftStick.getRawButton(1))
+        {
+            CameraMotor.setAngle(45,90);
+        }
     }
 }
