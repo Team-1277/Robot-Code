@@ -8,6 +8,7 @@
 package org.team1277.robot;
 
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Joystick;
@@ -71,7 +72,6 @@ public class MainRobot extends IterativeRobot {
     //Flashing Light
     public static Relay light;
     
-    //public static final String eatItNick = "CAMEL CASE FTW";
     
     /********************************** Constructor **************************************************/
     
@@ -117,7 +117,7 @@ public class MainRobot extends IterativeRobot {
         System.out.println("Initializing robot....");
         
         driveMode = 1; //Tank Drive
-        driveSpeed = .75;
+        driveSpeed = 1;
         
         System.out.println("Initialization done....");
     }
@@ -187,6 +187,17 @@ public class MainRobot extends IterativeRobot {
     public void teleopPeriodic() {
         // feed the user watchdog at every period when tele-op is enabled
         Watchdog.getInstance().feed();
+        
+        for (int i=0; i<18; i++) {
+            if (rightStick.getRawButton(i))
+            {
+                System.out.println("Button # "+ i);
+            }
+        }
+        
+        //System.out.println(rightStick.getX(GenericHID.Hand.kRight));
+        //System.out.println(rightStick.s))
+        
         // add to the loop count
         telePeriodicLoops++;
         //Main drive train
@@ -201,5 +212,7 @@ public class MainRobot extends IterativeRobot {
         {
             CameraMotor.setAngle(45,90);
         }
+        
+        //ImageProcessor.Process();
     }
 }
