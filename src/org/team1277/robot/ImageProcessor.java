@@ -25,6 +25,7 @@ public class ImageProcessor {
         {
             System.out.println("\\/***\\/");
             //System.out.println(server.getNumber("test"));
+            //Try updating roborealm
             System.out.println(server.containsKey("IMAGE_COUNT"));
             System.out.println(server.getNumber("IMAGE_COUNT",0.0));
             System.out.println("/\\***/\\");
