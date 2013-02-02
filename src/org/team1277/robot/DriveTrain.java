@@ -12,6 +12,7 @@ public class DriveTrain {
     /**
      * This function updates the jaguars based on the position of the joysticks
      */
+        
     public static void updateDrive(int state) {
         if (state == 1) {
             updateTank();
@@ -30,6 +31,8 @@ public class DriveTrain {
         double leftJoyY = MainRobot.leftStick.getY();
         MainRobot.rightDrive.set(rightJoyY*MainRobot.driveSpeed);//m_rightDrive.set(rightJoyY*MainRobot.driveSpeed);
         MainRobot.leftDrive.set(-leftJoyY*MainRobot.driveSpeed);
+        MainRobot.driveSpeed = 0.5d + MainRobot.leftStick.getTwist();
+        
     }
     
     /**

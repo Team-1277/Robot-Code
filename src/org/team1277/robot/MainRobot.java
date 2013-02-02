@@ -68,7 +68,7 @@ public class MainRobot extends IterativeRobot {
     public static Jaguar leftDrive;
     
     //Network Tables
-    NetworkTable server;
+    public static NetworkTable server;
     
     //Variables
     public static int driveMode; //1=Tankdrive 2=ArcadeDrive
@@ -79,7 +79,9 @@ public class MainRobot extends IterativeRobot {
     public static Servo cameraServoY;
     
     //Flashing Light
-    public static Relay light;
+    public static BlinkyLight light1;
+    
+    
     
     
     /********************************** Constructor **************************************************/
@@ -91,6 +93,7 @@ public class MainRobot extends IterativeRobot {
         telePeriodicLoops = 0;
         
         encoder1 = new EncoderCode(1,2);
+        light1 = new BlinkyLight(RELAY_LIGHT);
         
         
         server = NetworkTable.getTable("SmartDashboard");
@@ -107,8 +110,7 @@ public class MainRobot extends IterativeRobot {
         rightStick = new Joystick(1); //port 1
         leftStick = new Joystick(2); //port 2
         
-        //Init light
-        light = new Relay(RELAY_LIGHT);
+        
         
         // Iterate over all the buttons on each joystick, setting state to false for each
         int buttonNum;						// start counting buttons at button 1
@@ -224,7 +226,8 @@ public class MainRobot extends IterativeRobot {
         //System.out.println(testJag.get());
         DriveTrain.updateDrive(driveMode);
         CameraMotor.updateAngle();
-        //BlinkyLight.update(telePeriodicLoops);
+        light1.setSpeed((int)(1.4-Math.abs((leftStick.getY()*rightStick.getY())/2)*30));
+        light1.update(telePeriodicLoops);
         
         if (leftStick.getRawButton(1))
         {
