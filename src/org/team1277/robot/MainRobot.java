@@ -8,6 +8,7 @@
 package org.team1277.robot;
 
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Jaguar;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.Watchdog;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -42,6 +44,10 @@ public class MainRobot extends IterativeRobot {
     static final int BUTTON_CAMERA_SERVO_LEFT = 4;
     static final int BUTTON_CAMERA_SERVO_RIGHT = 5;
     
+    //Encoders
+    EncoderCode encoder1;
+    Encoder testEncoder;
+    
     //Relays
     static final int RELAY_LIGHT = 1;
     
@@ -60,6 +66,9 @@ public class MainRobot extends IterativeRobot {
     //Motor Variables
     public static Jaguar rightDrive;
     public static Jaguar leftDrive;
+    
+    //Network Tables
+    NetworkTable server;
     
     //Variables
     public static int driveMode; //1=Tankdrive 2=ArcadeDrive
@@ -80,6 +89,11 @@ public class MainRobot extends IterativeRobot {
         autoPeriodicLoops = 0;
         disabledPeriodicLoops = 0;
         telePeriodicLoops = 0;
+        
+        encoder1 = new EncoderCode(1,2);
+        
+        
+        server = NetworkTable.getTable("SmartDashboard");
         
         //Initalize jaguars
         //testJag = new Jaguar(PWM_rightDrivePort);
@@ -117,7 +131,7 @@ public class MainRobot extends IterativeRobot {
         System.out.println("Initializing robot....");
         
         driveMode = 1; //Tank Drive
-        driveSpeed = 1;
+        driveSpeed = .75;
         
         System.out.println("Initialization done....");
     }
@@ -128,7 +142,7 @@ public class MainRobot extends IterativeRobot {
     public void disabledInit() {
         System.out.println("Tele-op deactivated");
         disabledPeriodicLoops = 0;
-        
+        encoder1.stop();
         //stop motors
         rightDrive.set(0);
         leftDrive.set(0);
@@ -151,7 +165,11 @@ public class MainRobot extends IterativeRobot {
         System.out.println("Tele-op activated...");
         telePeriodicLoops = 0;
         
+        encoder1.reset();
+        encoder1.start();
+        
         //reset motors
+        
         rightDrive.set(0);
         leftDrive.set(0);
         CameraMotor.setAngle(45,90);
@@ -206,13 +224,21 @@ public class MainRobot extends IterativeRobot {
         //System.out.println(testJag.get());
         DriveTrain.updateDrive(driveMode);
         CameraMotor.updateAngle();
-        BlinkyLight.update(telePeriodicLoops);
+        //BlinkyLight.update(telePeriodicLoops);
         
         if (leftStick.getRawButton(1))
         {
             CameraMotor.setAngle(45,90);
         }
         
-        //ImageProcessor.Process();
+        //ImageProcessor.Process(server);
+        encoder1.putCount(server,"Count1");
+        encoder1.putDistance(server, "Distance1");
+        System.out.println("Count "+encoder1.get());
+        System.out.println("Distance "+encoder1.getDistance());
+        //System.out.println("Count "+testEncoder.get());
+        //System.out.println("Distance "+testEncoder.getDistance());
+        //System.out.println("Direction "+testEncoder.getDirection());
+        
     }
 }

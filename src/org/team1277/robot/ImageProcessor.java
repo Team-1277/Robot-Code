@@ -18,16 +18,16 @@ public class ImageProcessor {
     
     
     
-    public static void Process() {
-        NetworkTable server = NetworkTable.getTable("SmartDashboard");
+    public static void Process(NetworkTable server) {
+        
         
         try
         {
-            System.out.println("\\/***\\/");
             //System.out.println(server.getNumber("test"));
-            System.out.println(server.containsKey("IMAGE_COUNT"));
-            System.out.println(server.getNumber("IMAGE_COUNT",0.0));
-            System.out.println("/\\***/\\");
+            if(server.containsKey("IMAGE_COUNT"))
+            {
+                System.out.println(server.getNumber("IMAGE_COUNT",0.0));
+            }
         }
         catch (TableKeyNotDefinedException ex)
         {
