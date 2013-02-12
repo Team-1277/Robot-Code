@@ -157,7 +157,7 @@ public class MainRobot extends IterativeRobot {
     public void autonomousInit() {
         System.out.println("autonomous activated...");
         autoPeriodicLoops = 0;
-        CameraMotor.setAngle(45,90);
+        CameraMotor.setAngle(40,90);
     }
     
     /**
@@ -198,6 +198,8 @@ public class MainRobot extends IterativeRobot {
         Watchdog.getInstance().feed();
         // add to the loop count
         autoPeriodicLoops++;
+        ImageProcessor.Process(server);
+        ImageProcessor.Track();
         
     }
 
@@ -208,12 +210,7 @@ public class MainRobot extends IterativeRobot {
         // feed the user watchdog at every period when tele-op is enabled
         Watchdog.getInstance().feed();
         
-        for (int i=0; i<18; i++) {
-            if (rightStick.getRawButton(i))
-            {
-                System.out.println("Button # "+ i);
-            }
-        }
+        
         
         //System.out.println(rightStick.getX(GenericHID.Hand.kRight));
         //System.out.println(rightStick.s))
@@ -227,18 +224,14 @@ public class MainRobot extends IterativeRobot {
         DriveTrain.updateDrive(driveMode);
         CameraMotor.updateAngle();
         light1.setSpeed((int)(1.4-Math.abs((leftStick.getY()*rightStick.getY())/2)*30));
-        light1.update(telePeriodicLoops);
+        //light1.update(telePeriodicLoops);
         
         if (leftStick.getRawButton(1))
         {
             CameraMotor.setAngle(45,90);
         }
         
-        //ImageProcessor.Process(server);
-        encoder1.putCount(server,"Count1");
-        encoder1.putDistance(server, "Distance1");
-        System.out.println("Count "+encoder1.get());
-        System.out.println("Distance "+encoder1.getDistance());
+        ImageProcessor.Process(server);
         //System.out.println("Count "+testEncoder.get());
         //System.out.println("Distance "+testEncoder.getDistance());
         //System.out.println("Direction "+testEncoder.getDirection());

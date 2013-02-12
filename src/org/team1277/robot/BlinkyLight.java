@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.Relay.Value;
  */
 public class BlinkyLight {
     
-    int pattern;
-    int speed;
+    private int pattern;
+    private int speed;
     public Relay light;
     
     public BlinkyLight(int port, int pattern) {

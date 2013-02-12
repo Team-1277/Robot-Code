@@ -15,10 +15,27 @@ public class CameraMotor {
     public static double speed = 1d;
     
     public static void setAngle(double inAngleY, double inAngleX) {
-        angleY = inAngleY;
-        angleX = inAngleX;
-        MainRobot.cameraServoY.setAngle(angleY);
+        
+        if (inAngleY>=0 && inAngleY<=90) {
+            angleY=inAngleY;
+        }
+        else if(inAngleY<0) {
+            angleY=0;
+        }
+        else if(inAngleY>90) {
+            angleY=90;
+        }
+        if (inAngleX>=0 && inAngleX<=180) {
+            angleX=inAngleX;
+        }
+        else if(inAngleX<0) {
+            angleX=0;
+        }
+        else if(inAngleX>180) {
+            angleX=90;
+        }
         MainRobot.cameraServoX.setAngle(angleX);
+        MainRobot.cameraServoY.setAngle(angleY);
     }
     
     public static void updateAngle() { 
