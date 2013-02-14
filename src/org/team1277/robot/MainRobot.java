@@ -44,6 +44,47 @@ public class MainRobot extends IterativeRobot {
     static final int BUTTON_CAMERA_SERVO_LEFT = 4;
     static final int BUTTON_CAMERA_SERVO_RIGHT = 5;
     
+    //Rack potentiometer constants
+    static final double RACK_FULLY_RETRACTED_VOLTS = 0;
+    static final double RACK_FULLY_RETRACTED_INCHES = 0;
+    static final double RACK_FULLY_EXTENDED_VOLTS = 4.5;
+    static final double RACK_FULLY_EXTENDED_INCHES = 40;
+    
+    //Pivot potentionmeter constants
+    static final double PIVOT_FULLY_FORWARD_VOLTS = 4.5;
+    static final double PIVOT_FULLY_FORWARD_DEGREES = 180;
+    static final double PIVOT_FULLY_BACKWARD_VOLTS = .5;
+    static final double PIVOT_FULLY_BACKWARD_DEGRESS = -180;
+    
+    //Plumb bob potentiometer constants
+    static final double PLUMB_FULLY_FORWARD_VOLTS
+    static final double PLUMB_FULLY_FORWARD_DEGREES
+    static final double PLUMB_FULLY_BACKWARD_VOLTS
+    static final double PLUMB_FULLY_BACKWARD_DEGREES
+    
+    //Potentiometer info
+    public static double rackVolts;
+    public static double rackPivotVolts;
+    public static double plumbPivotVolts;
+    
+    //Postion Info
+    public static double rackExtention;
+    public static double rackPivot;
+    public static double plumbPivot;
+    public static double totalPivot;
+    public static int currentLevel;
+    
+    //Rack Postions Goals
+    public static double[] rackExtentionGoals = {0,0/*,ect*/);
+    public static double[] rackPivotGoals = {-45,-10/*,ect*/);
+    public static double[] RobotPivotGoals = {0,0/*,ect*/);
+    public static int stepNumber;
+    public static boolean correctToGoal;
+    
+    //Auto climb running
+    public static boolean climbing = false;
+    boolean climbButtonDown = false;
+    
     //Encoders
     EncoderCode encoder1;
     Encoder testEncoder;
@@ -66,6 +107,8 @@ public class MainRobot extends IterativeRobot {
     //Motor Variables
     public static Jaguar rightDrive;
     public static Jaguar leftDrive;
+    public static Jaguar rackExtender;
+    public static Jaguar rackPivoter;
     
     //Network Tables
     public static NetworkTable server;
@@ -148,6 +191,10 @@ public class MainRobot extends IterativeRobot {
         //stop motors
         rightDrive.set(0);
         leftDrive.set(0);
+        rackExtender.set(0);
+        rackPivoter.set(0);
+        climbing = false;
+        
         
     }
     
@@ -157,7 +204,10 @@ public class MainRobot extends IterativeRobot {
     public void autonomousInit() {
         System.out.println("autonomous activated...");
         autoPeriodicLoops = 0;
-        CameraMotor.setAngle(45,90);
+        CameraMotor.setAngle(45,95);
+        rackExtender.set(0);
+        rackPivoter.set(0);
+        climbing = false;
     }
     
     /**
@@ -167,6 +217,8 @@ public class MainRobot extends IterativeRobot {
         System.out.println("Tele-op activated...");
         telePeriodicLoops = 0;
         
+        climbing = false;
+        
         encoder1.reset();
         encoder1.start();
         
@@ -174,7 +226,9 @@ public class MainRobot extends IterativeRobot {
         
         rightDrive.set(0);
         leftDrive.set(0);
-        CameraMotor.setAngle(45,90);
+        rackExtender.set(0);
+        rackPivoter.set(0);
+        CameraMotor.setAngle(45,95);
 
     }
     
@@ -188,6 +242,7 @@ public class MainRobot extends IterativeRobot {
         Watchdog.getInstance().feed();
         // add to the loop count
         disabledPeriodicLoops++;
+        updatePostion();
     }
     
     /**
@@ -198,6 +253,7 @@ public class MainRobot extends IterativeRobot {
         Watchdog.getInstance().feed();
         // add to the loop count
         autoPeriodicLoops++;
+        updatePostion();
         
     }
 
@@ -208,12 +264,29 @@ public class MainRobot extends IterativeRobot {
         // feed the user watchdog at every period when tele-op is enabled
         Watchdog.getInstance().feed();
         
+        updatePostion();
+        
         for (int i=0; i<18; i++) {
             if (rightStick.getRawButton(i))
             {
                 System.out.println("Button # "+ i);
             }
         }
+        
+        if (rightStack.getRawButton(10))
+        {
+            if (!climbButtonDown)
+            {
+                climbing = !climbing;
+                climbButton = true;
+            }
+        }
+        else
+        {
+            climbButtonDown = false;
+        }
+        
+        
         
         //System.out.println(rightStick.getX(GenericHID.Hand.kRight));
         //System.out.println(rightStick.s))
@@ -231,7 +304,7 @@ public class MainRobot extends IterativeRobot {
         
         if (leftStick.getRawButton(1))
         {
-            CameraMotor.setAngle(45,90);
+            CameraMotor.setAngle(45,95);
         }
         
         //ImageProcessor.Process(server);
@@ -243,5 +316,50 @@ public class MainRobot extends IterativeRobot {
         //System.out.println("Distance "+testEncoder.getDistance());
         //System.out.println("Direction "+testEncoder.getDirection());
         
+    }
+    
+    public void updatePosition()
+    {
+        rackExtention = RACK_FULLY_RETRACTED_INCHES + (RACK_FULLY_EXTENDED_INCHES - RACK_FULLY_RETRACTED_INCHES) * ((rackVolts - RACK_FULLY_RETRACTED_VOLTS) / (RACK_FULLY_EXTENDED_VOLTS - RACK_FULLY_RETRACTED_VOLTS));
+        rackPivot = PIVOT_FULLY_BACKWARD_DEGREES + (PIVOT_FULLY_FORWARD_DEGREES - PIVOT_FULLY_BACKWARD_DEGREES) * ((rackPivotVolts - PIVOT_FULLY_BACKWARD_VOLTS) / (PIVOT_FULLY_FORWARD_VOLTS - PIVOT_FULLY_BACKWARD_VOLTS));
+        plumbPivot = PLUMB_FULLY_BACKWARD_DEGREES + (PLUMB_FULLY_FORWARD_DEGREES - PLUMB_FULLY_BACKWARD_DEGREES) * ((plumbPivotVolts - PLUMB_FULLY_BACKWARD_VOLTS) / (PLUMB_FULLY_FORWARD_VOLTS - PLUMB_FULLY_BACKWARD_VOLTS));
+        
+        totalPivot = rackPivot+plumbPivot;
+    }
+    
+    public void correctRack()
+    {
+        if (correctToGoal)
+        {
+            if (rackExtention<rackExtentionGoals[stepNumber]-2)
+            {
+                rackExtender.set(.5);
+            }
+            else if(rackExtention<rackExtentionGoals[stepNumber]-1)
+            {
+                rackExtender.set(.2);
+            }
+            else if(rackExtention<rackExtentionGoals[stepNumber]-.1)
+            {
+                rackExtender.set(.1);
+            }
+            else if(rackExtention>rackExtentionGoals[stepNumber]+2)
+            {
+                rackExtender.set(.5);
+            }
+            else if(rackExtention>rackExtentionGoals[stepNumber]+1)
+            {
+                rackExtender.set(.2);
+            }
+            else if(rackExtention>rackExtentionGoals[stepNumber]+.1)
+            {
+                rackExtender.set(.1);
+            }
+            else
+            {
+                rackExtender.set(0);
+            }
+            
+        }
     }
 }
