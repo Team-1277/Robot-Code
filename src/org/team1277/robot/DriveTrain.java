@@ -31,7 +31,6 @@ public class DriveTrain {
         double leftJoyY = MainRobot.leftStick.getY();
         MainRobot.rightDrive.set(rightJoyY*MainRobot.driveSpeed);//m_rightDrive.set(rightJoyY*MainRobot.driveSpeed);
         MainRobot.leftDrive.set(-leftJoyY*MainRobot.driveSpeed);
-        //MainRobot.driveSpeed = 0.5d + MainRobot.leftStick.getTwist();
         
     }
     

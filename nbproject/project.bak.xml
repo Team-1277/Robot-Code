@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     This is a sample netbeans project file for a Sun Spot Application project.
     You may edit it freely, it doesn't affect the ant-powered build.
 
- -->
-<project xmlns="http://www.netbeans.org/ns/project/1">
+ --><project xmlns="http://www.netbeans.org/ns/project/1">
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
@@ -20,14 +19,14 @@
             </properties>
             <folders>
                 <source-folder>
-                    <label>src</label>
-                    <type>java</type>
-                    <location>src</location>
+                    <label>Robot_2013_Personal</label>
+                    <location>.</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
                 <source-folder>
-                    <label>Robot_2013_Personal</label>
-                    <location>.</location>
+                    <label>src</label>
+                    <type>java</type>
+                    <location>src</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
             </folders>

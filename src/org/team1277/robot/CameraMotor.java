@@ -40,7 +40,6 @@ public class CameraMotor {
     
     public static void updateAngle() { 
         speed = MainRobot.leftStick.getThrottle() + 1d;
-        //System.out.println(speed);
         if(angleY > 0) {
             if(MainRobot.leftStick.getRawButton(MainRobot.BUTTON_CAMERA_SERVO_DOWN))
             {
