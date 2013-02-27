@@ -8,6 +8,7 @@
 package org.team1277.robot;
 
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -82,8 +83,6 @@ public class MainRobot extends IterativeRobot {
     public static BlinkyLight light1;
     
     
-    
-    
     /********************************** Constructor **************************************************/
     
     public MainRobot() {
@@ -93,7 +92,7 @@ public class MainRobot extends IterativeRobot {
         telePeriodicLoops = 0;
         
         encoder1 = new EncoderCode(1,2);
-        light1 = new BlinkyLight(RELAY_LIGHT);
+        //light1 = new BlinkyLight(RELAY_LIGHT);
         
         
         server = NetworkTable.getTable("SmartDashboard");
@@ -109,6 +108,8 @@ public class MainRobot extends IterativeRobot {
         //Init joysticks (You can change the ports in the driver station gui)
         rightStick = new Joystick(1); //port 1
         leftStick = new Joystick(2); //port 2
+        
+        Climber.loadClimber();
         
         
         
@@ -148,7 +149,8 @@ public class MainRobot extends IterativeRobot {
         //stop motors
         rightDrive.set(0);
         leftDrive.set(0);
-        
+        Climber.stop();
+        MainRobot.server.putBoolean("Emergency Break", true);
     }
     
     /**
@@ -158,6 +160,9 @@ public class MainRobot extends IterativeRobot {
         System.out.println("autonomous activated...");
         autoPeriodicLoops = 0;
         CameraMotor.setAngle(40,90);
+        Climber.stop();
+        Climber.reset();
+        Climber.start();
     }
     
     /**
@@ -167,8 +172,10 @@ public class MainRobot extends IterativeRobot {
         System.out.println("Tele-op activated...");
         telePeriodicLoops = 0;
         
-        encoder1.reset();
-        encoder1.start();
+        Climber.stop();
+        Climber.reset();
+        Climber.start();
+        
         
         //reset motors
         
@@ -198,8 +205,12 @@ public class MainRobot extends IterativeRobot {
         Watchdog.getInstance().feed();
         // add to the loop count
         autoPeriodicLoops++;
-        ImageProcessor.Process(server);
+        
+        Climber.update();
+        server.putNumber("Time", DriverStation.getInstance().getMatchTime());
+        /*ImageProcessor.Process(server);
         ImageProcessor.Track();
+        */
         
     }
 
@@ -210,6 +221,7 @@ public class MainRobot extends IterativeRobot {
         // feed the user watchdog at every period when tele-op is enabled
         Watchdog.getInstance().feed();
         
+        server.putNumber("Time", DriverStation.getInstance().getMatchTime());
         
         
         //System.out.println(rightStick.getX(GenericHID.Hand.kRight));
@@ -221,16 +233,27 @@ public class MainRobot extends IterativeRobot {
         //testJag.set(-.1);
         //m_leftDrive.set(.1);
         //System.out.println(testJag.get());
-        DriveTrain.updateDrive(driveMode);
-        CameraMotor.updateAngle();
-        light1.setSpeed((int)(1.4-Math.abs((leftStick.getY()*rightStick.getY())/2)*30));
-        //light1.update(telePeriodicLoops);
-        
+        if (!Climber.rackRunning)
+        {
+            DriveTrain.updateDrive(driveMode);
+        }
+        server.putBoolean("JoySticksDrive", !Climber.rackRunning);
+        //CameraMotor.updateAngle();
+        /*if (((int)(1.4-Math.abs((leftStick.getY()*rightStick.getY())/2)*30))!= 0)
+        {
+            light1.setSpeed((int)(1.4-Math.abs((leftStick.getY()*rightStick.getY())/2)*30));
+        }
+        else
+        {
+            light1.setSpeed(30);
+        }
+        light1.update(telePeriodicLoops);
+        */
         if (leftStick.getRawButton(1))
         {
             CameraMotor.setAngle(45,90);
         }
-        
+        Climber.update();
         ImageProcessor.Process(server);
         //System.out.println("Count "+testEncoder.get());
         //System.out.println("Distance "+testEncoder.getDistance());

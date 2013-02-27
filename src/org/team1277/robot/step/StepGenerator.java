@@ -8,6 +8,7 @@ import com.sun.squawk.microedition.io.FileConnection;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import javax.microedition.io.Connector;
+import org.team1277.robot.Climber;
 
 /**
  *
@@ -17,12 +18,13 @@ public class StepGenerator
 {
     private FileConnection conn;
     private OutputStreamWriter writer;
+    public boolean fileOpen = false;
     
     public void writeStep(double rackPosition, double rackAngle) throws IOException
     {
         writer.write(Double.toString(rackPosition));
         writer.write(' ');
-        writer.write(Double.toString(rackPosition));
+        writer.write(Double.toString(rackAngle));
         writer.write('\n');
     }
     
@@ -53,12 +55,36 @@ public class StepGenerator
     {
         try
         {
-            conn = (FileConnection) Connector.open("file:" + file);
-            writer = new OutputStreamWriter(conn.openOutputStream(), "UTF-8");
+            conn = (FileConnection) Connector.open("file://" + file);
+            if(Climber.LEARNING_MODE)
+            {
+                if (conn.exists())
+                {
+                    conn.delete();
+                    conn.create();
+                }
+                else
+                {
+
+                    conn.create();
+                }
+            }
+            else
+            {
+                if (!conn.exists())
+                {
+                    conn.create();
+                }
+            }
+            writer = new OutputStreamWriter(conn.openOutputStream());
+            
+            fileOpen = true;
             return true;
         }
         catch(IOException e)
         {
+            e.printStackTrace();
+            
             return false;
         }
     }
@@ -69,6 +95,8 @@ public class StepGenerator
         {
             writer.flush();
             writer.close();
+            
+            fileOpen = false;
             return true;
         }
         catch(IOException e)
