@@ -137,6 +137,7 @@ public class MainRobot extends IterativeRobot {
         driveSpeed = .75;
         
         System.out.println("Initialization done....");
+        //MainRobot.server.putBoolean("AUTO_RUN", false);
     }
 
     /**
@@ -174,7 +175,10 @@ public class MainRobot extends IterativeRobot {
         
         Climber.stop();
         Climber.reset();
-        Climber.start();
+        if (server.getBoolean("AUTO_RUN", false))
+        {
+            Climber.start();
+        }
         
         
         //reset motors

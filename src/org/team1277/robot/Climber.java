@@ -48,10 +48,10 @@ public class Climber {
     public static final double LEFT_EXTEND_LIMIT = 33;
     public static final double RIGHT_EXTEND_LIMIT = 33;
     
-    public static final double START_EXTEND = 30;
-    public static final double START_ANGLE = -17;
+    public static final double START_EXTEND = 28.7;
+    public static final double START_ANGLE = -11;
     
-    public static final boolean SLOW_AT_END = true;
+    public static final boolean SLOW_AT_END = false;
     
     public static boolean LEARNING_MODE = true;
     
@@ -126,7 +126,7 @@ public class Climber {
         
         climbing = false;
         stepNum = 0;
-        manual = false;
+        manual = true;
         if (LEARNING_MODE)
         {
             
@@ -136,7 +136,17 @@ public class Climber {
     
     public static void start()
     {
-        climbing = true;
+        if (MainRobot.server.getBoolean("AUTO_RUN", false))
+        {
+            climbing = true;
+            manual = false;
+        }
+        else
+        {
+            climbing = false;
+            manual = true;
+        }
+        LEARNING_MODE=false;
         if (DriverStation.getInstance().isAutonomous())
             LEARNING_MODE=false;
         
@@ -202,15 +212,19 @@ public class Climber {
                     stop();
                     reset();
                     LEARNING_MODE = !LEARNING_MODE;
-                    
+                    manual = false;
+                    climbing = false;
                 }
             }
             else
             {
                 buttonDown3 = false;
             }
-        
-        if (!manual)
+        if(MainRobot.rightStick.getRawButton(7))
+        {
+            correct(START_EXTEND, START_ANGLE);
+        }
+        else if (!manual)
         {
             if (MainRobot.leftStick.getRawButton(10))
             {
@@ -256,11 +270,8 @@ public class Climber {
             MainRobot.server.putBoolean("Climbing", climbing);
             MainRobot.server.putNumber("StepNum", stepNum);
             
-            if(MainRobot.rightStick.getRawButton(7))
-            {
-                correct(START_EXTEND, START_ANGLE);
-            }
-            else if (climbing)
+            
+            if (climbing)
             {
 
                 if (correctToGoal)
@@ -339,7 +350,7 @@ public class Climber {
                rackPivoter.set(0);
             }
         }
-        if (manual)
+        else if (manual)
         {
             if (MainRobot.rightStick.getRawButton(1))
             {
